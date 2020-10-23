@@ -17,18 +17,45 @@ const generateItemElement = function (item) {
   }
 
   return `
-    <li class='js-item-element' data-item-id='${item.id}'>
-      ${itemTitle}
-      <div class='shopping-item-controls'>
-        <button class='shopping-item-toggle js-item-toggle'>
-          <span class='button-label'>check</span>
-        </button>
-        <button class='shopping-item-delete js-item-delete'>
-          <span class='button-label'>delete</span>
-        </button>
-      </div>
+    <li class='js-item-element' data-item-id='${item.id}' data-item-name='${item.name}'>
+      <form>
+        <input type="text" id="edit area" class="js-item-edit-entry" placeholder= ${item.name}></input>
+        <hr>
+        <div class='shopping-item-controls'>
+          <button class='shopping-item-toggle js-item-toggle'>
+            <span class='button-label'>check</span>
+          </button>
+          <button class='shopping-item-delete js-item-delete'>
+            <span class='button-label'>delete</span>
+          </button>
+          <button type= 'submit' class='shopping-item-edit js-item-edit'>
+            <span class='button-label'>edit</span>
+          </button>
+        </div>
+      </form>
     </li>`;
 };
+ 
+const handleItemEdit = function(){
+  $('.js-shopping-list').submit(function(evt){
+    evt.preventDefault();
+    const nameForEdits =  $('.js-item-element').data('item-name');
+    const newItemEditName = $('.js-item-edit-entry').val();
+    changeName(newItemEditName,nameForEdits,store.items)
+    render()
+  })
+}
+ 
+const changeName = function(newName,namePassed,arr){
+    for(let i=0;i<arr.length;i++){
+      console.log(arr[i].name)
+      console.log(namePassed)
+      if(arr[i].name === namePassed){
+        arr[i].name = newName;
+        return
+      }
+    }
+  }
 
 const generateShoppingItemsString = function (shoppingList) {
   const items = shoppingList.map((item) => generateItemElement(item));
@@ -100,17 +127,7 @@ const getItemIdFromElement = function (item) {
  * @param {string} id 
  */
 const deleteListItem = function (id) {
-  // As with 'addItemToShoppingLIst', this 
-  // function also has the side effect of
-  // mutating the global store value.
-  //
-  // First we find the index of the item with 
-  // the specified id using the native
-  // Array.prototype.findIndex() method. 
   const index = store.items.findIndex(item => item.id === id);
-  // Then we call `.splice` at the index of 
-  // the list item we want to remove, with 
-  // a removeCount of 1.
   store.items.splice(index, 1);
 };
 
@@ -160,6 +177,7 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleItemEdit();
 };
 
 // when the page loads, call `handleShoppingList`
